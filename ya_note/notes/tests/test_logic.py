@@ -3,7 +3,6 @@ from http import HTTPStatus
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
-from pytils.translit import slugify
 
 from notes.forms import WARNING
 from notes.models import Note
@@ -19,7 +18,6 @@ SLUG = 'slug'
 
 class TestNoteCreation(TestCase):
 
-
     @classmethod
     def setUpTestData(cls):
         cls.user = User.objects.create(
@@ -33,7 +31,7 @@ class TestNoteCreation(TestCase):
             'title': TITLE,
             'slug': SLUG,
             'author': cls.auth_client
-            }
+        }
 
     def test_anonymous_user_cant_create_note(self):
         self.client.post(URL_ADD, data=self.form_data)
