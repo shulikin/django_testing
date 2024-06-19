@@ -1,12 +1,13 @@
-from datetime import timedelta
-
 import pytest
-
+from datetime import datetime, timedelta
+from django.urls import reverse
 from django.test.client import Client
 from django.utils import timezone
+from django.conf import settings
 
 from news.models import Comment, News
-from yanews.settings import NEWS_COUNT_ON_HOME_PAGE
+
+COMMENT_TEXT = 'Текст комментария'
 
 
 @pytest.fixture
@@ -22,12 +23,38 @@ def author_client(author):
 
 
 @pytest.fixture
-def new():
-    new = News.objects.create(
+def reader(django_user_model):
+    return django_user_model.objects.create(username='Читатель')
+
+
+@pytest.fixture
+def reader_client(reader):
+    client = Client()
+    client.force_login(reader)
+    return client
+
+
+@pytest.fixture
+def news():
+    today = datetime.today()
+    all_news = [
+        News(
+            title=f'Новость {index}',
+            text='Просто текст.',
+            date=today - timedelta(days=index)
+        )
+        for index in range(settings.NEWS_COUNT_ON_HOME_PAGE + 1)
+    ]
+    News.objects.bulk_create(all_news)
+
+
+@pytest.fixture
+def clause():
+    news = News.objects.create(
         title='Заголовок',
         text='Текст',
     )
-    return new
+    return news
 
 
 @pytest.fixture
@@ -42,29 +69,24 @@ def news_list():
 
 
 @pytest.fixture
-def comment(new, author):
+def comment(clause, author):
     comment = Comment.objects.create(
-        news=new,
+        news=clause,
         author=author,
-        text='Комментарий',
+        text=COMMENT_TEXT
     )
     return comment
 
 
 @pytest.fixture
-def comments(author, new):
+def comments(clause, author):
     now = timezone.now()
-    comments = []
-    for index in range(2):
+    for index in range(10):
         comment = Comment.objects.create(
-            news=new,
-            author=author,
-            text=f"Текст {index}",
+            news=clause, author=author, text=f'Tекст {index}',
         )
         comment.created = now + timedelta(days=index)
         comment.save()
-        comments.append(comment)
-    return comments
 
 
 @pytest.fixture
@@ -80,3 +102,38 @@ def id_comment_for_args(comment):
 @pytest.fixture
 def form_data():
     return {'text': 'Новый текст'}
+
+
+@pytest.fixture
+def home_url():
+    return reverse('news:home')
+
+
+@pytest.fixture
+def detail_url(clause):
+    return reverse('news:detail', args=(clause.id,))
+
+
+@pytest.fixture
+def edit_url(comment):
+    return reverse('news:edit', args=(comment.id,))
+
+
+@pytest.fixture
+def delete_url(comment):
+    return reverse('news:delete', args=(comment.id,))
+
+
+@pytest.fixture
+def login_url():
+    return reverse('users:login')
+
+
+@pytest.fixture
+def logout_url():
+    return reverse('users:logout')
+
+
+@pytest.fixture
+def signup_url():
+    return reverse('users:signup')
