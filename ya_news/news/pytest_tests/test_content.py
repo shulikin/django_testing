@@ -37,7 +37,7 @@ def test_comments_order(client, detail_url, comments):
         (pytest.lazy_fixture('author_client'), True)
     ),
 )
-def test_form_availability_for_different_users( 
+def test_form_availability_for_different_users(
         parametrized_client, form_in_page, detail_url
 ):
     response = parametrized_client.get(detail_url)

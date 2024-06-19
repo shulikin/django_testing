@@ -9,9 +9,10 @@ pytestmark = pytest.mark.django_db
 OK = HTTPStatus.OK
 NOT_FOUND = HTTPStatus.NOT_FOUND
 comment_lazy = pytest.lazy_fixture('comment')
-reader_lazy =pytest.lazy_fixture('reader_client')
-author_lazy =pytest.lazy_fixture('author_client')
-clause_lazy =pytest.lazy_fixture('clause')
+reader_lazy = pytest.lazy_fixture('reader_client')
+author_lazy = pytest.lazy_fixture('author_client')
+clause_lazy = pytest.lazy_fixture('clause')
+
 
 @pytest.mark.parametrize(
     'name, user, status, args',
