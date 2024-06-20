@@ -1,7 +1,6 @@
 from http import HTTPStatus
 
 import pytest
-from django.conf import settings
 from pytest_django.asserts import assertRedirects
 
 from news.forms import BAD_WORDS, WARNING
@@ -11,6 +10,7 @@ pytestmark = pytest.mark.django_db
 
 TEXT = 'Текст'
 NEW_TEXT = {'text': TEXT}
+
 
 def test_anonymous_create_comment(client, detail_url):
     comments_count = Comment.objects.count()

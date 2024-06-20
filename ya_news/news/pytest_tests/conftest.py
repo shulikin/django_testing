@@ -60,7 +60,7 @@ def clause():
 
 @pytest.fixture
 def news_list():
-    for index in range(NEWS_COUNT_ON_HOME_PAGE + 1):
+    for index in range(settings.NEWS_COUNT_ON_HOME_PAGE + 1):
         news = News.objects.create(
             title=f'Заголовок {index}',
             text='Текст.'
