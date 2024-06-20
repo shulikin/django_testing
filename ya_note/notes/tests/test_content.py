@@ -20,6 +20,7 @@ class TestContent(FixturesForTests):
             (self.edit_url)
         )
         for url in urls:
-            response = self.author_client.get(url)
-            self.assertIn('form', response.context)
-            self.assertIsInstance(response.context['form'], NoteForm)
+            with self.subTest(url):
+                response = self.author_client.get(url)
+                self.assertIn('form', response.context)
+                self.assertIsInstance(response.context['form'], NoteForm)

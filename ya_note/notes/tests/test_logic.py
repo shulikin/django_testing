@@ -1,10 +1,10 @@
 from http import HTTPStatus
-from pytils.translit import slugify
 
-from notes.tests.common import FixturesForTests
+from pytils.translit import slugify
 
 from notes.forms import WARNING
 from notes.models import Note
+from notes.tests.common import FixturesForTests
 
 
 class TestNoteCreation(FixturesForTests):
@@ -18,10 +18,15 @@ class TestNoteCreation(FixturesForTests):
     def test_user_can_create_note(self):
         Note.objects.all().delete()
         self.client.force_login(self.author)
-        response = self.client.post(self.add_url, data=self.form_data)
+        response = self.author_client.post(self.add_url, data=self.form_data)
         self.assertRedirects(response, self.success_url)
         notes_count = Note.objects.count()
         self.assertEqual(notes_count, 1)
+        message = Note.objects.get()
+        self.assertEqual(message.title, self.form_data['title'])
+        self.assertEqual(message.text, self.form_data['text'])
+        self.assertEqual(message.slug, self.form_data['slug'])
+        self.assertEqual(message.author, self.author)
 
     def test_empty_slug(self):
         Note.objects.all().delete()
@@ -37,10 +42,10 @@ class TestNoteCreation(FixturesForTests):
 class TestNoteEditDelete(FixturesForTests):
 
     def test_author_can_delete_note(self):
+        notes_count = Note.objects.count()
         response = self.author_client.delete(self.delete_url)
         self.assertRedirects(response, self.success_url)
-        notes_count = Note.objects.count()
-        self.assertEqual(notes_count, self.notes_counts)
+        self.assertEqual(Note.objects.count(), notes_count - 1)
 
     def test_user_cant_delete_note_of_another_user(self):
         notes_count = Note.objects.count()
@@ -67,6 +72,7 @@ class TestNoteEditDelete(FixturesForTests):
         self.assertEqual(self.note.author, note_from_db.author)
 
     def test_not_unique_slug(self):
+        notes_counts = Note.objects.count()
         self.form_data['slug'] = self.note.slug
         response = self.author_client.post(
             self.add_url,
@@ -80,5 +86,5 @@ class TestNoteEditDelete(FixturesForTests):
         )
         self.assertEqual(
             Note.objects.count(),
-            self.notes_counts + 1
+            notes_counts
         )

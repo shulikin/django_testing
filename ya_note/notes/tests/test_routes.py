@@ -1,4 +1,5 @@
 from http import HTTPStatus
+
 from django.contrib.auth import get_user
 
 from notes.tests.common import FixturesForTests
@@ -27,7 +28,7 @@ class TestRoutes(FixturesForTests):
         for url in urls:
             with self.subTest(url=url):
                 response = self.not_author_client.get(url)
-            self.assertEqual(response.status_code, HTTPStatus.OK)  # 200
+                self.assertEqual(response.status_code, HTTPStatus.OK)  # 200
 
     def test_availability_detail_edit_delete_for_author(self):
         users_statuses = (

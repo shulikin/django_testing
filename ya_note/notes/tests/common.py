@@ -14,7 +14,7 @@ class FixturesForTests(TestCase):
         """Создание фикстур."""
         cls.author = User.objects.create(username='Автор')
         cls.not_author = User.objects.create(username='Не автор')
-        cls.notes_counts = Note.objects.count()
+        # cls.notes_counts = Note.objects.count()
         cls.note = Note.objects.create(title='Заголовок', text='Текст',
                                        slug='some-slug', author=cls.author)
         cls.form_data = {
